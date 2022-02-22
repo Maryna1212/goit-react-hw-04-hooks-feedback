@@ -1,25 +1,64 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react';
+import Section from './components/Section/Section';
+import Statistics from './components/Statistics/Statistics';
+import FeedbackOptions from './components/FeedbackOptions/FeedbackOptions';
+import Notification from './components/Notification/Notification';
 
-function App() {
+export default function App() {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const handleClick = option => {
+    switch (option) {
+      case 'good':
+        setGood(prevGood => prevGood + 1);
+        break;
+      case 'neutral':
+        setNeutral(prevNeutral => prevNeutral + 1);
+        break;
+      case 'bad':
+        setBad(prevBad => prevBad + 1);
+        break;
+      default:
+        return;
+    }
+  };
+
+  const countTotalFeedback = () => {
+    return good + neutral + bad;
+  };
+
+  const total = countTotalFeedback();
+
+  const countPositiveFeedbackPercentage = () => {
+    return (good * 100) / countTotalFeedback();
+  };
+
+  const percentage = countPositiveFeedbackPercentage();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Section title="Please leave feedback">
+        <FeedbackOptions
+          options={['good', 'neutral', 'bad']}
+          onLeaveFeedback={handleClick}
+        />
+      </Section>
+
+      <Section title="Statistics">
+        {total > 0 ? (
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={total}
+            percentage={percentage}
+          />
+        ) : (
+          <Notification message="There is no feedback" />
+        )}
+      </Section>
     </div>
   );
 }
-
-export default App;
